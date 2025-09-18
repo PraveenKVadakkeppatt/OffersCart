@@ -44,9 +44,8 @@ class Account(AbstractBaseUser):
     first_name = models.CharField (max_length=50)
     last_name = models.CharField (max_length=50)
     email = models.EmailField(max_length=100,unique=True)
-    username= models.CharField(max_length=100,unique=True)
     phone_number = models.CharField(max_length=10)
-
+    username = models.CharField(max_length=50)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)
@@ -70,3 +69,5 @@ class Account(AbstractBaseUser):
     
     def has_module_perms(self, app_label):
         return True
+
+
