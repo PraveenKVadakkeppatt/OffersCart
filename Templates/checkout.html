@@ -15,7 +15,8 @@
 	<aside class="col-lg-6">
 <div class="card">
     <div class="card-body">
-        <form action="">
+        <form action="{% url "place_order" %}" method="POST">
+            {% csrf_token %}
             <div class="form-row">
                 <div class="col form-group">
                     <input type="text" class="form-control" placeholder="First Name" name="first_name" required></input>
@@ -30,7 +31,7 @@
                     <input type="email" class="form-control" placeholder="Email address" name="email" required></input>
                 </div>
                 <div class="col form-group">
-                    <input type="text" class="form-control" placeholder="Phone number" name="phone" required></input>
+                    <input type="text" class="form-control" placeholder="Phone number" name="phone_number" required></input>
                 </div>
             </div>
 
@@ -39,7 +40,7 @@
                     <input type="text" class="form-control" placeholder="Address line 1" name="address_line_1" required></input>
                 </div>
                 <div class="col form-group">
-                    <input type="text" class="form-control" placeholder="Address line 2" name="address_line_1" required></input>
+                    <input type="text" class="form-control" placeholder="Address line 2" name="address_line_2"></input>
                 </div>
             </div>
 
@@ -56,10 +57,11 @@
             </div>
 
             <div class="form-row">
-                <textarea name="note" id="" placeholder="Note" class="form-control"></textarea>
+                <textarea name="order_note" id="" placeholder="Note" class="form-control"></textarea>
             </div>
+              
 
-        </form>
+   
     </div>
 </div> <!-- card.// -->
 
@@ -75,9 +77,13 @@
   <th scope="col">Product</th>
   <th scope="col" width="120">Quantity</th>
   <th scope="col" width="120">Price</th>
+
+
+  
 </tr>
 </thead>
 <tbody>
+
 
 {% for cart_item in cart_items  %}
 
@@ -120,7 +126,10 @@
 
 </tbody>
 </table>
-
+  <div class="form-group">
+              <button type="submit" class="btn btn-primary btn-block"> Place Order  </button>
+</div> <!-- form-group// -->  
+</form>
             
 		</div> <!-- card-body.// -->
 		</div> <!-- card.// -->
