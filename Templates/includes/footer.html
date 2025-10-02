@@ -20,6 +20,19 @@
 	</div><!-- //container -->
 </footer>
 <!-- ========================= FOOTER END // ========================= -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $('.thumb a').click(function(e){
+        e.preventDefault(); // stop opening in new tab
+        var newImage = $(this).attr("href");
+        $('.mainImage img').fadeOut(200, function(){
+            $(this).attr('src', newImage).fadeIn(200);
+        });
+    });
+});
+</script>
+
 
 </body>
 </html>

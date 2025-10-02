@@ -1,0 +1,65 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-conten padding-y bg">
+{% include 'includes/alert.html' %}
+
+<div class="container">
+	<div class="row">
+	<aside class="col-md-3">
+		{% include "includes/dashboard_sidebar.html" %}
+		<br>
+		<a class="btn btn-light btn-block" href="#"> <i class="fa fa-power-off"></i> <span class="text">Log out</span> </a> 
+		<!--   SIDEBAR .//END   -->
+	</aside>
+	<main class="col-md-9">
+		<article class="card">
+		<header class="card-header">
+			<strong class="d-inline-block mr-3">Logged in as: {{user.full_name}}</strong>
+			
+		</header>
+		<div class="card-body">
+			<div class="row"> 
+				<div class="container">
+                           
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Billing Name</th>
+                            <th>Phone</th>
+                            <th>Order Total</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                        <tr>
+                            <td><a href="{% url "order_details" order.order_number %}">#{{order.order_number}}</a></td>
+                            <td>{{ order.full_name }}</td>
+                            <td>{{ order.phone_number }}</td>
+                            <td>{{ order.order_total }}</td>
+                            <td>{{ order.updated_at }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+				
+			</div> <!-- row.// -->
+		</div> <!-- card-body .// -->
+		<div class="table-responsive">
+		 
+		</div> <!-- table-responsive .end// -->
+		</article> <!-- order-group.// --> 
+	</main>
+</div> <!-- row.// -->
+</div>
+
+
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+{% endblock %}
