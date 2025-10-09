@@ -126,17 +126,18 @@ def logout(request):
     messages.success(request,'You are log out now')
     return redirect('login')
 
-@login_required(login_url='login')
 def dashboard(request):
-    orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id,is_ordered=True)
-    oreder_count = orders.count()
+    orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
+    order_count = orders.count()
 
-    userprofile = userProfile.objects.get(user = request.user.id)
+    # Use get_or_create to handle missing profiles
+    userprofile, created = userProfile.objects.get_or_create(user=request.user)
+    
     context = {
-        'oreder_count':oreder_count,
-        'userprofile':userprofile,
+        'order_count': order_count,
+        'userprofile': userprofile,
     }
-    return render(request,'Account/dashboard.html',context)
+    return render(request, 'Account/dashboard.html', context)
 
 # def my_orders(request):
 #     orders = Order.objects.filter(user_id=request.user.id).order_by('-created_at')
