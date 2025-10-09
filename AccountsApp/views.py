@@ -131,7 +131,7 @@ def dashboard(request):
     orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id,is_ordered=True)
     oreder_count = orders.count()
 
-    userprofile = userProfile.objects.get(user = request.user)
+    userprofile = userProfile.objects.get(user = request.user.id)
     context = {
         'oreder_count':oreder_count,
         'userprofile':userprofile,
