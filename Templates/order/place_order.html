@@ -131,17 +131,36 @@
 			  <dt>Tax:</dt>
 			  <dd class="text-right"> ₹{{ tax }}</dd>
 			</dl>
-
             <dl class="dlist-align">
 			  <dt>Discount:</dt>
-			  <dd class="text-right"> ₹{{ discount |floatformat:2 }}</dd>
+              {% if coupon %}
+			  <dd class="text-right"> ₹{{ discount|floatformat:2 }}</dd>
+              {% else %}
+			  <dd class="text-right"> ₹0</dd>
+              {% endif %}
 			</dl>
-            
 			<dl class="dlist-align">
 			  <dt>Total:</dt>
-			  <dd class="text-right text-dark b"><strong>₹{{ grand_total |floatformat:2 }}</strong></dd>
+			  <dd class="text-right text-dark b"><strong>₹{{ grand_total }}</strong></dd>
 			</dl>
 			<hr>
+
+            <!-- ✅ Coupon Form -->
+                {% if coupon %}
+                    <p>Coupon applied: <strong>{{ coupon.code }}</strong></p>
+                    <p>Discount: ₹{{ discount|floatformat:2 }}</p>
+                    {% else %}
+                    <form method="post" action="{% url 'apply_coupon' %}">
+                        {% csrf_token %}
+                        <label for="coupon_code">Have a coupon?</label>
+                        <input type="text" name="code" id="coupon_code" placeholder="Enter coupon code" required>
+                        <button type="submit">Apply Coupon</button>
+
+                        
+                    </form>
+
+                    {% endif %}
+                    
 			
 			<div id="paypal-button-container">
 				<!-- Paypal Button -->
@@ -151,7 +170,7 @@
 		</div> <!-- card-body.// -->
 		</div> <!-- card.// -->
 
-</aside> <!-- col.// -->
+    </aside> <!-- col.// -->
 
 </div>
 
@@ -198,10 +217,23 @@ function sendData(details){
 			paypal_email: details.payer.email_address
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        window.location.href = redirect_url + '?order_number='+data.order_number+'&payment_id='+data.transID;
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                console.error("Payment error:", errorData);
+                alert("Payment failed: " + (errorData.error || "Unknown error"));
+                throw new Error("Payment failed");
+            });
+        }
+        return response.json();
     })
+    .then(data => {
+        window.location.href = redirect_url + '?order_number=' + data.order_number + '&payment_id=' + data.transID;
+    })
+    .catch(error => {
+        console.error("Final error:", error);
+        alert("Something went wrong while processing your payment.");
+    });
 }
 
 // Render PayPal button

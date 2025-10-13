@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from orderApp.models import Order, OrderProduct, Payment
+from orderApp.models import Coupon, Order, OrderProduct, Payment
 
 # Register your models here.
 
@@ -15,6 +15,12 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ['order_number','first_name','last_name','phone_number','email',]
     inlines = [OrderProductInline]
 
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ['code', 'discount_percent', 'valid_from', 'valid_to', 'active', 'usage_limit', 'used_count']
+    search_fields = ['code']
+    list_filter = ['active', 'valid_from', 'valid_to']
+
 admin.site.register(Order,OrderAdmin)
 admin.site.register(Payment)
 admin.site.register(OrderProduct)
+admin.site.register(Coupon,CouponAdmin)

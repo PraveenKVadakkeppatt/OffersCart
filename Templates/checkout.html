@@ -13,9 +13,61 @@
 
 <div class="row">
 	<aside class="col-lg-6">
+        
+
+
+
 <div class="card">
+ <form method="post" action="{% url 'apply_coupon' %}" class="mt-4">
+    {% csrf_token %}
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Apply Coupon</h5>
+            <div class="input-group">
+                <input type="text" class="form-control" name="code" placeholder="Enter coupon code" required>
+                <button type="submit" class="btn btn-success">Apply</button>
+            </div>
+
+            {% if coupon %}
+            <div class="alert alert-success mt-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Coupon Applied:</strong> {{ coupon.code }}  
+                    <span class="text-muted">({{ coupon.discount_percent }}% off)</span>
+                </div>
+                <a href="{% url 'remove_coupon' %}" class="btn btn-sm btn-outline-danger">Remove</a>
+            </div>
+            {% endif %}
+
+            {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+{% comment %} 
+    {% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %} {% endcomment %}
+
     <div class="card-body">
-        <form action="{% url "place_order" %}" method="POST">
+        <form action="{% url "place_order" %}"  method="POST">
             {% csrf_token %}
             <div class="form-row">
                 <div class="col form-group">
@@ -65,13 +117,14 @@
     </div>
 </div> <!-- card.// -->
 
-	</aside> <!-- col.// -->
+</aside> <!-- col.// -->
 	<aside class="col-lg-6">
-
-		<div class="card">
-		<div class="card-body">
+    
+<div class="card">
+<div class="card-body">
 			
-            <table class="table table-borderless table-shopping-cart">
+        
+<table class="table table-borderless table-shopping-cart">
 <thead class="text-muted">
 <tr class="small text-uppercase">
   <th scope="col">Product</th>
@@ -126,7 +179,44 @@
 
 </tbody>
 </table>
-  <div class="form-group">
+<aside class="col-lg-12">
+
+		<div class="card">
+		<div class="card-body">
+			<dl class="dlist-align">
+			  <dt>Total price:</dt>
+			  <dd class="text-right">₹{{ total }}</dd>
+			</dl>
+			<dl class="dlist-align">
+			  <dt>Tax:</dt>
+			  <dd class="text-right"> ₹{{ tax }}</dd>
+			</dl>
+
+            <dl class="dlist-align">
+			  <dt>Discount:</dt>
+			  <dd class="text-right"> -₹{{ discount|floatformat:2 }}</dd>
+			</dl>
+            
+			
+			<hr>
+            <dl class="dlist-align">
+			  <dt>Total:</dt>
+			  <dd class="text-right text-dark b"><strong>₹{{ grand_total |floatformat:2 }}</strong></dd>
+			</dl>
+			
+			<div id="paypal-button-container">
+				<!-- Paypal Button -->
+			</div>
+
+			
+		</div> <!-- card-body.// -->
+		</div> <!-- card.// -->
+
+</aside> <!-- col.// -->
+
+
+
+  <div class="form-group pt-3">
               <button type="submit" class="btn btn-primary btn-block"> Place Order  </button>
 </div> <!-- form-group// -->  
 </form>

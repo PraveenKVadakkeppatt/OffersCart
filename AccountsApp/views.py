@@ -126,11 +126,12 @@ def logout(request):
     messages.success(request,'You are log out now')
     return redirect('login')
 
+@login_required(login_url='login')
 def dashboard(request):
     orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
     order_count = orders.count()
-
-    # Use get_or_create to handle missing profiles
+    
+    # Simple fix - get or create profile
     userprofile, created = userProfile.objects.get_or_create(user=request.user)
     
     context = {

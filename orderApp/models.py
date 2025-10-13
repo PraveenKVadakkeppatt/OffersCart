@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 
 from AccountsApp.models import Account
@@ -28,6 +29,7 @@ class Order(models.Model):
     )
     user = models.ForeignKey(Account,on_delete=models.CASCADE)
     payment = models.ForeignKey(Payment,on_delete=models.SET_NULL,null=True,blank=True)
+    discount = models.FloatField(default=0)
     order_number = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -73,3 +75,35 @@ class OrderProduct(models.Model):
     def __str__(self):
         return self.product.product_name
 
+
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percent = models.PositiveIntegerField()
+    valid_from = models.DateTimeField(default=timezone.now)
+    valid_to = models.DateTimeField(default=timezone.now)
+    active = models.BooleanField(default=True)
+    usage_limit = models.PositiveIntegerField(default=1)
+    used_count = models.PositiveIntegerField(default=0)
+    used_by = models.ManyToManyField(Account, blank=True)
+    def is_valid_for_user(self, user):
+        now = timezone.now()
+        return (
+            self.active and
+            self.valid_from <= now <= self.valid_to and
+            self.used_count < self.usage_limit and
+            user not in self.used_by.all()
+        )
+
+    def __str__(self):
+        return self.code
+
+
+
+
+class SuperCoins(models.Model):
+    user = models.OneToOneField(Account,on_delete=models.CASCADE)
+    balance = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.user.first_name} - {self.balance} coins"

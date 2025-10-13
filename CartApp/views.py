@@ -4,6 +4,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from CartApp.models import Cart, CartItem
 from StoreApp.models import Product,Variations
 from django .contrib.auth.decorators import login_required
+
+from orderApp.models import Coupon
 # Create your views here.
 
 # def cart(request):
@@ -183,27 +185,59 @@ def cart(request,total=0,quantity=0,cart_items=None):
     }
     return render(request, 'cart.html',context)
 
+
+
+
+
 @login_required(login_url='login')
-def checkout(request,total=0,quantity=0,cart_items=None,tax=0,grand_total=0):
+def checkout(request):
+    total = 0
+    quantity = 0
+    tax = 0
+    grand_total = 0
+    discount = 0
+    coupon = None
+    cart_items = []
+
     try:
+        # Get cart items for authenticated user
         if request.user.is_authenticated:
             cart_items = CartItem.objects.filter(user=request.user, is_active=True)
         else:
             cart = Cart.objects.get(cart_id=_cart_id(request))
             cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+
+        # Calculate total and quantity
         for cart_item in cart_items:
-            total += (cart_item.product.price * cart_item.quantity)
+            total += cart_item.product.price * cart_item.quantity
             quantity += cart_item.quantity
-            tax = (.5 * total)/100
-            grand_total = total + tax
+
+        tax = (0.5 * total) / 100
+        grand_total = total + tax
+
+        # Check for applied coupon
+        if 'coupon_id' in request.session:
+            try:
+                coupon = Coupon.objects.get(id=request.session['coupon_id'])
+                if coupon.is_valid_for_user(request.user):
+                    discount = (coupon.discount_percent / 100) * total
+                    grand_total -= discount
+                else:
+                    del request.session['coupon_id']  # remove invalid coupon
+            except Coupon.DoesNotExist:
+                pass
+
     except ObjectDoesNotExist:
         pass
 
     context = {
-        'total' : total,
+        'total': total,
         'quantity': quantity,
         'cart_items': cart_items,
         'tax': tax,
-        'grand_total':grand_total,
+        'grand_total': grand_total,
+        'discount': discount,
+        'coupon': coupon,
     }
-    return render(request,'checkout.html',context)
+
+    return render(request, 'checkout.html', context)
